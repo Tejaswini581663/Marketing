@@ -1,0 +1,16 @@
+import plotly.express as px
+
+# Hourly Conversion Funnel Analysis
+hourly_summary = df.groupby(['most_ads_hour', 'test group'])['converted'].agg(['count', 'sum']).reset_index()
+hourly_summary['conversion_rate'] = (hourly_summary['sum'] / hourly_summary['count']) * 100
+
+fig = px.line(
+    hourly_summary, 
+    x='most_ads_hour', 
+    y='conversion_rate', 
+    color='test group',
+    title='Conversion Rate Trend by Peak Impression Hour',
+    labels={'most_ads_hour': 'Hour of Day (0-23)', 'conversion_rate': 'Conversion Rate (%)'},
+    markers=True
+)
+fig.show()
