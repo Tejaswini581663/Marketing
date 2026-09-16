@@ -19,7 +19,8 @@ print("Database schema successfully applied from sql/schema.sql!")
 df = pd.read_csv('Data/cleaned_marketing_ab.csv')
 
 # Append data into the pre-defined table
-df.to_sql('marketing_campaign', conn, if_exists='append', index=False)
+# Change this line:
+df.to_sql('marketing_campaign', conn, if_exists='replace', index=False)
 print(f"Successfully loaded {len(df)} rows into 'marketing_campaign' table in marketing.db!")
 
 conn.close()
