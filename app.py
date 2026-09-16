@@ -22,7 +22,7 @@ test_group = st.sidebar.selectbox("Test Group", ["ad", "psa"])
 if st.sidebar.button("Predict Conversion"):
   model_path = 'models/conversion_random_forest.pkl'
 
-if st.sidebar.button("Predict Conversion"):
+if st.sidebar.button("Predict Conversion", key="predict_conversion_btn"):
     model_path = 'models/conversion_random_forest.pkl'
     if os.path.exists(model_path):
         try:
@@ -37,7 +37,6 @@ if st.sidebar.button("Predict Conversion"):
             st.sidebar.error("Model file corrupted. Please re-run train_model.py.")
     else:
         st.sidebar.warning("Model file not found.")
-
 # Main Tabs
 tab1, tab2, tab3 = st.tabs(["Database Analytics", "Visual Reports", "Local AI Assistant"])
 
