@@ -14,7 +14,7 @@ persist_dir = 'data/chroma_db'
 
 # 1. Safety Check: Verify summary file exists and is not empty
 if not os.path.exists(summary_file) or os.path.getsize(summary_file) == 0:
-    print(f"Error: '{summary_file}' is missing or empty. Run 'python scripts/llm_insight_generator.py' first!")
+    print(f"Error: '{summary_file}' is missing or empty. Please run 'python scripts/llm_insight_generator.py' first!")
     sys.exit(1)
 
 # 2. Read Summary File Directly
@@ -62,7 +62,7 @@ rag_chain = (
     | StrOutputParser()
 )
 
-# 7. Test Query Execution
+# 7. Execute Query
 user_query = "Should we continue running the PSA control group or switch 100% to Ads?"
 print(f"\nUser Query: {user_query}")
 

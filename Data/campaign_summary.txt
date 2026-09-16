@@ -1,19 +1,19 @@
 **Executive Summary**
 
-Our recent A/B test campaign yielded the following key findings:
+Our A/B test results from the recent ad campaign reveal the following key findings:
 
-1. **Conversion Rate Comparison**: The 'ad' variant outperformed the 'psa' variant with a conversion rate of 25.00% compared to 21.43% for the 'psa' variant, indicating a 13.57% difference in conversion rates.
-2. **Total Ad Exposure**: The 'ad' variant received 27.07 ad impressions per user, while the 'psa' variant received 21.89 ad impressions per user, indicating a 25.00% difference in ad exposure.
-3. **Recommendation**: Based on the results, we recommend rolling out the 'ad' variant broadly due to its significantly higher conversion rate and comparable ad exposure. This variant is likely to yield better ROI and drive more effective campaign performance.
+1. **Conversion Rate Comparison**: The 'ad' variant outperforms the 'psa' variant in terms of conversion rates, with a difference of 4 percentage points (25.000000% - 21.428571%). This suggests that the ad messaging resonated more effectively with the target audience.
+2. **Total Ad Exposure**: The 'ad' variant received significantly more ad exposure, with an average of 27.068182 ads seen per user, compared to 21.892857 ads seen per user for the 'psa' variant. This could indicate that the ad format and creative assets were more engaging and attention-grabbing.
+3. **Recommendation**: Based on the results, we recommend rolling out the 'ad' variant broadly, as it demonstrated higher conversion rates and greater ad exposure. However, we also suggest considering a hybrid approach, where the 'psa' variant is targeted towards specific audience segments or demographics that may respond better to this type of messaging.
 
-**Recommendation Rationale**:
+**Recommendation Rationale**
 
-* The 'ad' variant's higher conversion rate suggests that the messaging and creative assets are more effective in driving desired actions.
-* The comparable ad exposure between the two variants suggests that the 'ad' variant is not sacrificing visibility for its higher conversion rate.
-* Rolling out the 'ad' variant broadly will allow us to capitalize on its strengths and optimize the campaign for better performance.
+While the 'ad' variant outperformed the 'psa' variant, it's essential to consider the potential benefits of the 'psa' variant in specific contexts. For example, if the target audience is highly engaged with public service announcements, the 'psa' variant may be more effective. A hybrid approach would allow us to test and optimize the messaging for different audience segments, maximizing the overall impact of the campaign.
 
-**Next Steps**:
+**Next Steps**
 
-* Refine the 'ad' variant's creative assets and messaging to further optimize its performance.
-* Monitor the campaign's performance and adjust the 'psa' variant as needed to ensure it remains competitive.
-* Consider A/B testing the 'ad' variant against other variants to further optimize its performance.
+To further optimize the campaign, we recommend:
+
+* Conducting additional A/B tests to refine the ad creative assets and messaging for the 'ad' variant
+* Analyzing the performance of the 'psa' variant in specific audience segments to inform targeted messaging and optimization
+* Considering the use of lookalike targeting and other audience-based strategies to expand the reach of the 'ad' variant
