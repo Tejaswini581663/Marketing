@@ -21,20 +21,22 @@ test_group = st.sidebar.selectbox("Test Group", ["ad", "psa"])
 
 if st.sidebar.button("Predict Conversion"):
   model_path = 'models/conversion_random_forest.pkl'
-model_path = 'models/conversion_random_forest.pkl'
-if os.path.exists(model_path):
-    try:
-        with open(model_path, 'rb') as f:
-            model = pickle.load(f)
-        
-        group_val = 1 if test_group == "ad" else 0
-        pred = model.predict([[group_val, total_ads, most_ads_hour]])
-        res_text = 'Converted' if pred[0] == 1 else 'No Conversion'
-        st.sidebar.success(f"Prediction: {res_text}")
-    except Exception as e:
-        st.sidebar.error("Model file corrupted. Please re-run train_model.py.")
-else:
-    st.sidebar.warning("Model file not found.")
+
+if st.sidebar.button("Predict Conversion"):
+    model_path = 'models/conversion_random_forest.pkl'
+    if os.path.exists(model_path):
+        try:
+            with open(model_path, 'rb') as f:
+                model = pickle.load(f)
+            
+            group_val = 1 if test_group == "ad" else 0
+            pred = model.predict([[group_val, total_ads, most_ads_hour]])
+            res_text = 'Converted' if pred[0] == 1 else 'No Conversion'
+            st.sidebar.success(f"Prediction: {res_text}")
+        except Exception as e:
+            st.sidebar.error("Model file corrupted. Please re-run train_model.py.")
+    else:
+        st.sidebar.warning("Model file not found.")
 
 # Main Tabs
 tab1, tab2, tab3 = st.tabs(["Database Analytics", "Visual Reports", "Local AI Assistant"])
