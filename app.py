@@ -19,9 +19,6 @@ total_ads = st.sidebar.slider("Total Ads Seen", 1, 100, 10)
 most_ads_hour = st.sidebar.slider("Peak Hour", 0, 23, 15)
 test_group = st.sidebar.selectbox("Test Group", ["ad", "psa"])
 
-if st.sidebar.button("Predict Conversion"):
-  model_path = 'models/conversion_random_forest.pkl'
-
 if st.sidebar.button("Predict Conversion", key="predict_conversion_btn"):
     model_path = 'models/conversion_random_forest.pkl'
     if os.path.exists(model_path):
