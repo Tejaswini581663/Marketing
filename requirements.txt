@@ -5,6 +5,9 @@ matplotlib
 seaborn
 langchain
 langchain-community
+langchain-core
 langchain-huggingface
+langchain-ollama
+langchain-chroma
 sentence-transformers
 chromadb
