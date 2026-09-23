@@ -3,9 +3,21 @@ import pandas as pd
 import sqlite3
 import pickle
 import os
+import pickle
+import os
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_ollama import ChatOllama
-from langchain_chroma import Chroma
+
+# Safe import for Ollama on Cloud deployment
+try:
+    from langchain_ollama import ChatOllama
+except ModuleNotFoundError:
+    ChatOllama = None
+
+try:
+    from langchain_chroma import Chroma
+except ModuleNotFoundError:
+    Chroma = None
+
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
