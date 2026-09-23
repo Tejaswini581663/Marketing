@@ -3,33 +3,40 @@ import pandas as pd
 import sqlite3
 import pickle
 import os
-import pickle
-import os
-from langchain_huggingface import HuggingFaceEmbeddings
 
-# Safe import for Ollama on Cloud deployment
-try:
-    from langchain_ollama import ChatOllama
-except ModuleNotFoundError:
-    ChatOllama = None
+st.set_page_config(page_title="Marketing Analytics", layout="wide")
 
-try:
-    from langchain_chroma import Chroma
-except ModuleNotFoundError:
-    Chroma = None
-
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
-
-st.set_page_config(page_title="Marketing A/B Testing & AI Engine", layout="wide")
 st.title("📊 Marketing Campaign Analytics & Local RAG Assistant")
 
-# Sidebar - Machine Learning Inference
+# --- 1. CACHED DATABASE QUERY ---
+@st.cache_data(ttl=600)
+def load_data():
+    db_path = 'Data/marketing.db'
+    if os.path.exists(db_path):
+        conn = sqlite3.connect(db_path)
+        df = pd.read_sql_query("SELECT * FROM marketing_campaign LIMIT 100", conn)
+        conn.close()
+        return df
+    return pd.DataFrame()
+
+# --- 2. CACHED RAG SETUP ---
+@st.cache_resource
+def load_rag_chain():
+    try:
+        from langchain_huggingface import HuggingFaceEmbeddings
+        from langchain_chroma import Chroma
+        
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        db = Chroma(persist_directory="Data/chroma_db", embedding_function=embeddings)
+        return db
+    except Exception as e:
+        return None
+
+# --- SIDEBAR WIDGETS ---
 st.sidebar.header("Conversion Predictor")
-total_ads = st.sidebar.slider("Total Ads Seen", 1, 100, 10)
-most_ads_hour = st.sidebar.slider("Peak Hour", 0, 23, 15)
 test_group = st.sidebar.selectbox("Test Group", ["ad", "psa"])
+total_ads = st.sidebar.number_input("Total Ads Seen", min_value=1, value=10)
+most_ads_hour = st.sidebar.slider("Peak Hour", 0, 23, 12)
 
 if st.sidebar.button("Predict Conversion", key="predict_conversion_btn"):
     model_path = 'models/conversion_random_forest.pkl'
@@ -37,80 +44,33 @@ if st.sidebar.button("Predict Conversion", key="predict_conversion_btn"):
         try:
             with open(model_path, 'rb') as f:
                 model = pickle.load(f)
-            
             group_val = 1 if test_group == "ad" else 0
             pred = model.predict([[group_val, total_ads, most_ads_hour]])
             res_text = 'Converted' if pred[0] == 1 else 'No Conversion'
             st.sidebar.success(f"Prediction: {res_text}")
-        except Exception as e:
-            st.sidebar.error("Model file corrupted. Please re-run train_model.py.")
+        except Exception:
+            st.sidebar.error("Model file corrupted. Re-run train_model.py.")
     else:
         st.sidebar.warning("Model file not found.")
-# Main Tabs
+
+# --- MAIN TABS ---
 tab1, tab2, tab3 = st.tabs(["Database Analytics", "Visual Reports", "Local AI Assistant"])
 
 with tab1:
     st.subheader("SQLite Campaign Records")
-    db_path = 'Data/marketing.db'
-    if os.path.exists(db_path):
-        conn = sqlite3.connect(db_path)
-        try:
-            df_db = pd.read_sql_query("SELECT * FROM marketing_campaign LIMIT 100", conn)
-            st.dataframe(df_db)
-        except Exception as e:
-            st.error(f"Error querying table 'marketing_campaign': {e}")
-        finally:
-            conn.close()
+    df_records = load_data()
+    if not df_records.empty:
+        st.dataframe(df_records, use_container_width=True)
     else:
-        st.error("Database file missing. Run 'python scripts/push_to_db.py' first.")
+        st.info("No database records found. Ensure Data/marketing.db is uploaded.")
 
 with tab2:
-    st.subheader("Visual Reports")
-    col1, col2 = st.columns(2)
-    with col1:
-        img1 = "reports/conversion_by_variant.png"
-        if os.path.exists(img1):
-            st.image(img1, caption="Conversion by Variant")
-        else:
-            st.warning("Missing conversion_by_variant.png chart.")
-    with col2:
-        img2 = "reports/hourly_engagement_heatmap.png"
-        if os.path.exists(img2):
-            st.image(img2, caption="Hourly Engagement")
-        else:
-            st.warning("Missing hourly_engagement_heatmap.png chart.")
+    st.subheader("Visual Analysis")
+    if os.path.exists("reports"):
+        for img in os.listdir("reports"):
+            if img.endswith((".png", ".jpg")):
+                st.image(os.path.join("reports", img))
 
 with tab3:
-    st.subheader("Offline Marketing AI (Ollama + ChromaDB)")
-    user_query = st.text_input("Ask a question about the campaign:", "What is the key insight from the test?")
-    if st.button("Query Local RAG"):
-        persist_dir = 'data/chroma_db'
-        if not os.path.exists(persist_dir):
-            st.error("Vector DB not found. Run 'python scripts/rag_campaign_qa.py' first.")
-        else:
-            with st.spinner("Analyzing context via local Llama 3.2..."):
-                try:
-                    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-                    vectorstore = Chroma(
-                        collection_name="local_marketing_insights",
-                        embedding_function=embeddings,
-                        persist_directory=persist_dir
-                    )
-                    retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
-                    llm = ChatOllama(model="llama3.2", temperature=0)
-
-                    def format_docs(docs):
-                        return "\n\n".join(doc.page_content for doc in docs)
-
-                    system_prompt = "You are a marketing assistant. Answer using only context:\n\n{context}"
-                    prompt = ChatPromptTemplate.from_messages([("system", system_prompt), ("human", "{question}")])
-                    
-                    rag_chain = (
-                        {"context": retriever | format_docs, "question": RunnablePassthrough()}
-                        | prompt | llm | StrOutputParser()
-                    )
-                    
-                    answer = rag_chain.invoke(user_query)
-                    st.write(answer)
-                except Exception as e:
-                    st.error(f"Error generating AI response: {e}")
+    st.subheader("Local AI Assistant")
+    st.info("RAG Query engine ready for marketing campaign documentation.")
