@@ -38,21 +38,29 @@ test_group = st.sidebar.selectbox("Test Group", ["ad", "psa"])
 total_ads = st.sidebar.number_input("Total Ads Seen", min_value=1, value=10)
 most_ads_hour = st.sidebar.slider("Peak Hour", 0, 23, 12)
 
+# Open app.py in VS Code and update the prediction logic inside the sidebar button:
 if st.sidebar.button("Predict Conversion", key="predict_conversion_btn"):
     model_path = 'models/conversion_random_forest.pkl'
     if os.path.exists(model_path):
         try:
             with open(model_path, 'rb') as f:
                 model = pickle.load(f)
+            
+            # Format inputs into a DataFrame matching model training features
             group_val = 1 if test_group == "ad" else 0
-            pred = model.predict([[group_val, total_ads, most_ads_hour]])
+            input_df = pd.DataFrame([{
+                'test_group': group_val,
+                'total_ads': total_ads,
+                'most_ads_hour': most_ads_hour
+            }])
+            
+            pred = model.predict(input_df)
             res_text = 'Converted' if pred[0] == 1 else 'No Conversion'
             st.sidebar.success(f"Prediction: {res_text}")
-        except Exception:
-            st.sidebar.error("Model file corrupted. Re-run train_model.py.")
+        except Exception as e:
+            st.sidebar.error(f"Error loading model: {e}")
     else:
-        st.sidebar.warning("Model file not found.")
-
+        st.sidebar.warning("Model file not found at models/conversion_random_forest.pkl")
 # --- MAIN TABS ---
 tab1, tab2, tab3 = st.tabs(["Database Analytics", "Visual Reports", "Local AI Assistant"])
 
